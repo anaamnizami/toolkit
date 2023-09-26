@@ -112,4 +112,5 @@ func (t *Toolkit) UploadFiles(r *http.Request, destFolder string, rename ...bool
 			}
 		}
 	}
+	return UploadedFiles, err
 }
