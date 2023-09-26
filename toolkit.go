@@ -66,10 +66,10 @@ func (t *Toolkit) UploadFiles(r *http.Request, destFolder string, rename ...bool
 				}
 
 				//TODO check if the filetype is permitted
-				allowed := false
+				allowed := true
 				fileType := http.DetectContentType(buff)
 				// allowedTypes := []string{"image/jpg, image/png, image/gif"}
-
+				fmt.Println(len(t.AllowedTypes))
 				if len(t.AllowedTypes) > 0 {
 					for _, x := range t.AllowedTypes {
 						if strings.EqualFold(fileType, x) {
@@ -77,7 +77,7 @@ func (t *Toolkit) UploadFiles(r *http.Request, destFolder string, rename ...bool
 						}
 					}
 				} else {
-					allowed = false
+					allowed = true
 				}
 
 				if !allowed {
