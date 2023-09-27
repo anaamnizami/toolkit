@@ -36,6 +36,18 @@ type UploadedFile struct {
 	FileSize         int64
 }
 
+func (t *Toolkit) UploadOneFile(r *http.Request, destFolder string, rename ...bool) (*UploadedFile, error) {
+	renameFile := true
+	if len(rename) > 0 {
+		renameFile = rename[0]
+	}
+	files, err := t.UploadFiles(r, destFolder, renameFile)
+	if err != nil {
+		return nil, err
+	}
+	return files[0], nil
+}
+
 func (t *Toolkit) UploadFiles(r *http.Request, destFolder string, rename ...bool) ([]*UploadedFile, error) {
 	renameFile := true
 	if len(rename) > 0 {
@@ -69,7 +81,6 @@ func (t *Toolkit) UploadFiles(r *http.Request, destFolder string, rename ...bool
 				allowed := true
 				fileType := http.DetectContentType(buff)
 				// allowedTypes := []string{"image/jpg, image/png, image/gif"}
-				fmt.Println(len(t.AllowedTypes))
 				if len(t.AllowedTypes) > 0 {
 					for _, x := range t.AllowedTypes {
 						if strings.EqualFold(fileType, x) {
@@ -77,7 +88,7 @@ func (t *Toolkit) UploadFiles(r *http.Request, destFolder string, rename ...bool
 						}
 					}
 				} else {
-					allowed = true
+					allowed = false
 				}
 
 				if !allowed {
@@ -93,6 +104,7 @@ func (t *Toolkit) UploadFiles(r *http.Request, destFolder string, rename ...bool
 				} else {
 					UploadedFile.UploadedFileName = hdr.Filename
 				}
+				UploadedFile.OrignalFileName = hdr.Filename
 				var outfile *os.File
 				defer outfile.Close()
 				if outfile, err := os.Create(filepath.Join(destFolder, UploadedFile.UploadedFileName)); err != nil {
